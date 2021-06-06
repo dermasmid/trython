@@ -8,7 +8,7 @@
 
 import function_error_handling
 
-function_error_handling.handle_error
+@function_error_handling.handle_error()
 def function_that_might_throw_error():
     # stuff that is questionable
     pass

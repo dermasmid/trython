@@ -4,19 +4,33 @@ import functools
 __version__ = '1.2'
 
 
-def handle_error(number_of_attempts: int = 5,
-                 time_to_sleep: int = 30,
-                 errors_to_catch: tuple = (Exception, ),
-                 callback=None):
-    def handle_error_decorator(func):
+def wrap(
+    func: callable = None,
+    number_of_attempts: int = 5,
+    time_to_sleep: int = 30,
+    errors_to_catch: tuple = (Exception, ),
+    callback=None
+    ):
+
+    def _decorate(func):
+
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            for attempt_number in range(number_of_attempts + 1):
+        def wrapped_function(*args, **kwargs):
+            attempt_number = 0
+            while True:
                 try:
                     return func(*args, **kwargs)
-                except errors_to_catch as ex:
-                    time.sleep(time_to_sleep)
-            if callback:
-                callback(ex)
-            raise ex
-        return wrapper
+                except errors_to_catch as e:
+                    if not attempt_number > number_of_attempts:
+                        time.sleep(time_to_sleep)
+                        attempt_number += 1
+                    else:
+                        if callback:
+                            callback(e)
+                        raise e
+        return wrapped_function
+
+    if func:
+        return _decorate(func)
+
+    return _decorate

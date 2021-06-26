@@ -42,7 +42,7 @@ The wrap function takes in a couple of arguments:
 * `time_to_sleep`: (*int*) **default=30** Time to sleep between retries.
 * `errors_to_catch`: (*tuple*) **default=(Exception, )** Which errors you want to handle.
 * `validator`: (*callable*)  **default=None** A function that will validate if the return of the function is valid, if the function throws an error or returns false - it will be treated as if the `func` thew an error.
-* `callback`: (*callable*)  **default=None** A function to be called each time an exception occurs, this function should take the exception as an argument.
+* `callback`: (*callable*)  **default=None** A function to be when we finaly raise the error, this function should take the exception as an argument.
 
 
 

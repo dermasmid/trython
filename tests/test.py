@@ -44,7 +44,14 @@ class testFunctionErrorHandling(unittest.TestCase):
             self.fail("function should not have failed")
 
 
-
+    def test_context_manager(self):
+        with function_error_handling.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
+            self.assertRaises(MissingSchema, get, 'f')
+            self.assertRaises(json.decoder.JSONDecodeError, get, VALID_RSS)
+            try:
+                get(VALID_JSON)
+            except:
+                self.fail("function should not have failed")
 
 
 if __name__ == '__main__':

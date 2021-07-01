@@ -33,6 +33,19 @@ def requests_get(url):
 ```
 Now when you call `requests_get` the same logic will be applied.
 
+## Approach 3
+Creating a temporary function with a context manager.
+```python
+import requests
+import function_error_handling
+with function_error_handling.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
+    response = get('https://jsonplaceholder.typicode.com/posts').json()
+
+with function_error_handling.context_wrap(requests.get, validator=validators.requests_xml_validator, time_to_sleep=1) as get:
+    response = get('https://www.cs.utexas.edu/~mitra/csFall2015/cs329/lectures/xml/xslplanes.1.xml.txt').text
+
+```
+This is very usefull if you want to have diffrent validators for the same function, as shown above.
 
 # Options
 The wrap function takes in a couple of arguments:

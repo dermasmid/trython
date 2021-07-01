@@ -1,5 +1,6 @@
 import time
 import functools
+from contextlib import contextmanager
 
 
 
@@ -27,8 +28,11 @@ def wrap(
                     try:
                         if validator:
                             assert validator(result)
-                    except:
-                        error = ValueError('Validator function returned false or failed.')
+                    except Exception as e:
+                        if isinstance(e, AssertionError):
+                            error = ValueError('Validator function returned false.')
+                        else:
+                            error = e
                     else:
                         return result
 
@@ -45,3 +49,16 @@ def wrap(
         return _decorate(func)
 
     return _decorate
+
+
+
+@contextmanager
+def context_wrap(
+    func: callable = None,
+    number_of_attempts: int = 5,
+    time_to_sleep: int = 30,
+    errors_to_catch: tuple = (Exception, ),
+    validator: callable = None,
+    callback=None
+    ):
+    yield wrap(func, number_of_attempts, time_to_sleep, errors_to_catch, validator, callback)

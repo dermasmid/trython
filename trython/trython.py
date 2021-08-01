@@ -10,7 +10,8 @@ def wrap(
     time_to_sleep: int = 30,
     errors_to_catch: tuple = (Exception, ),
     validator: callable = None,
-    callback=None
+    on_exception_callback: callable = None,
+    on_raise_callback: callable = None
     ):
 
     def _decorate(func):
@@ -23,6 +24,8 @@ def wrap(
                 try:
                     result = func(*args, **kwargs)
                 except errors_to_catch as e:
+                    if on_exception_callback:
+                        on_exception_callback(e)
                     error = e
                 else:
                     try:
@@ -37,8 +40,8 @@ def wrap(
                         return result
 
                 if attempt_number > number_of_attempts:
-                    if callback:
-                        callback(error)
+                    if on_raise_callback:
+                        on_raise_callback(error)
                     raise error
                 attempt_number += 1
                 time.sleep(time_to_sleep)
@@ -59,6 +62,7 @@ def context_wrap(
     time_to_sleep: int = 30,
     errors_to_catch: tuple = (Exception, ),
     validator: callable = None,
-    callback=None
+    on_exception_callback: callable = None,
+    on_raise_callback: callable = None
     ):
-    yield wrap(func, number_of_attempts, time_to_sleep, errors_to_catch, validator, callback)
+    yield wrap(func, number_of_attempts, time_to_sleep, errors_to_catch, validator, on_exception_callback, on_raise_callback)

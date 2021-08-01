@@ -1,13 +1,13 @@
 # Installation
 
-`pip3 install function_error_handling`
+`pip3 install trython`
 
 # About
 The main use for this package is when making requests with the requests module.
 Sometimes the network might be unavailable, Or the server (the endpiont) might be temporarily down,
 We don't want our script to quit just because of that (although we can put everything in a loop and catch error's, We don't want to do that because that will still lose the progress of the previous loop, and is a bit messy).
 
-This is where *function_error_handling* comes in, it gives you two very approachable techniques to solve this.
+This is where *trython* comes in, it gives you two very approachable techniques to solve this.
 
 From here on I'll be using `requests.get` as the function we want to add error handling to.
 
@@ -16,8 +16,8 @@ From here on I'll be using `requests.get` as the function we want to add error h
 Replacing `requests.get` with an alternitave error handled one.
 ```python
 import requests
-import function_error_handling
-requests.get = function_error_handling.wrap(requests.get)
+import trython
+requests.get = trython.wrap(requests.get)
 ```
 Now when you call `requests.get` and it throws an error, we will catch that and try to run the request again - without you even knowing.
 
@@ -25,9 +25,9 @@ Now when you call `requests.get` and it throws an error, we will catch that and 
 Decorating your own function.
 ```python
 import requests
-import function_error_handling
+import trython
 
-@function_error_handling.wrap()
+@trython.wrap()
 def requests_get(url):
     return requests.get(url)
 ```
@@ -37,11 +37,11 @@ Now when you call `requests_get` the same logic will be applied.
 Creating a temporary function with a context manager.
 ```python
 import requests
-import function_error_handling
-with function_error_handling.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
+import trython
+with trython.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
     response = get('https://jsonplaceholder.typicode.com/posts').json()
 
-with function_error_handling.context_wrap(requests.get, validator=validators.requests_xml_validator, time_to_sleep=1) as get:
+with trython.context_wrap(requests.get, validator=validators.requests_xml_validator, time_to_sleep=1) as get:
     response = get('https://www.cs.utexas.edu/~mitra/csFall2015/cs329/lectures/xml/xslplanes.1.xml.txt').text
 
 ```
@@ -66,5 +66,5 @@ A very common reason that a script will quit is when you are hitting a api endpi
 That's when we create a validator - when we expect the result of a given function to be something, but might a times be something else entirely.
 We create a function that takes in the func's return value and we check if it satisfies us, And if the validator function returns false or throws an error, then we retry, otherwise - we know we got the right data.
 
-I have included some predefined validators which you can import like this: `from function_error_handling import validators`.
+I have included some predefined validators which you can import like this: `from trython import validators`.
 Feel free to make pr with some other helpful validators.

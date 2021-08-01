@@ -9,8 +9,8 @@ else:
     separator = '/'
 sys.path.insert(0, '/'.join(os.path.dirname(os.path.realpath(__file__)).split(separator)[:-1]))
 
-import function_error_handling
-from function_error_handling import validators
+import trython
+from trython import validators
 
 import unittest
 import requests
@@ -26,7 +26,7 @@ class testFunctionErrorHandling(unittest.TestCase):
 
     def test_decotator(self):
 
-        @function_error_handling.wrap(time_to_sleep=1, number_of_attempts=2, validator= validators.requests_json_validator)
+        @trython.wrap(time_to_sleep=1, number_of_attempts=2, validator= validators.requests_json_validator)
         def test(url):
             return requests.get(url)
         
@@ -37,7 +37,7 @@ class testFunctionErrorHandling(unittest.TestCase):
 
 
     def test_wrap(self):
-        requests.get = function_error_handling.wrap(requests.get, time_to_sleep=1, validator= validators.requests_xml_validator)
+        requests.get = trython.wrap(requests.get, time_to_sleep=1, validator= validators.requests_xml_validator)
         try:
             requests.get(VALID_XML)
         except:
@@ -45,7 +45,7 @@ class testFunctionErrorHandling(unittest.TestCase):
 
 
     def test_context_manager(self):
-        with function_error_handling.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
+        with trython.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
             self.assertRaises(MissingSchema, get, 'f')
             self.assertRaises(json.decoder.JSONDecodeError, get, VALID_RSS)
             try:

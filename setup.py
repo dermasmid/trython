@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 import re
-from function_error_handling import __version__ as version
+from trython import __version__ as version
 
 
 with open('README.md', encoding='utf-8') as f:
@@ -14,10 +14,10 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 
 setup(
-    name = 'function_error_handling',
+    name = 'trython',
     version = version,
     packages= find_packages(),
-    url = 'https://github.com/dermasmid/python-function-error-handling',
+    url = 'https://github.com/dermasmid/trython',
     license = 'MIT',
     long_description = readme,
     long_description_content_type = 'text/markdown',

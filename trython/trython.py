@@ -18,7 +18,7 @@ def wrap(
 
         @functools.wraps(func)
         def wrapped_function(*args, **kwargs):
-            attempt_number = 0
+            attempt_number = 1
             error = None
             while True:
                 try:
@@ -39,7 +39,7 @@ def wrap(
                     else:
                         return result
 
-                if attempt_number > number_of_attempts:
+                if attempt_number == number_of_attempts:
                     if on_raise_callback:
                         on_raise_callback(error)
                     raise error

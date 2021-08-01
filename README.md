@@ -5,7 +5,7 @@
 # About
 The main use for this package is when making requests with the requests module.
 Sometimes the network might be unavailable, Or the server (the endpiont) might be temporarily down,
-We don't want our script to quit just because of that (although we can put everything in a loop and catch error's that will still lose the progress of the previous loop, and is a bit messy).
+We don't want our script to quit just because of that (although we can put everything in a loop and catch error's, We don't want to do that because that will still lose the progress of the previous loop, and is a bit messy).
 
 This is where *function_error_handling* comes in, it gives you two very approachable techniques to solve this.
 

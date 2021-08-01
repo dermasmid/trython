@@ -54,5 +54,30 @@ class testFunctionErrorHandling(unittest.TestCase):
                 self.fail("function should not have failed")
 
 
+    def test_on_exception_callback(self):
+        def raising_error(exception: Exception, message: str):
+            raise exception(message)
+
+        def check_if_hello_world(e):
+            self.count += 1
+            if str(e) == 'hello world':
+                pass
+            else:
+                raise e
+        with trython.context_wrap(raising_error, number_of_attempts= 3, time_to_sleep=1, on_exception_callback= check_if_hello_world) as func:
+            try:
+                self.count = 0
+                func(Exception, 'hello world')
+            except:
+                print(self.count)
+                assert self.count == 3
+
+            try:
+                self.count = 0
+                func(Exception, 'something else')
+            except:
+                assert self.count == 1
+
+
 if __name__ == '__main__':
     unittest.main()

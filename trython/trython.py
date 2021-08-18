@@ -11,6 +11,7 @@ def wrap(
     errors_to_catch: tuple = (Exception, ),
     validator: callable = None,
     on_exception_callback: callable = None,
+    on_validation_failure_callback: callable = None,
     on_raise_callback: callable = None
     ):
 
@@ -24,9 +25,9 @@ def wrap(
                 try:
                     result = func(*args, **kwargs)
                 except errors_to_catch as e:
-                    if on_exception_callback:
-                        on_exception_callback(e)
                     error = e
+                    if on_exception_callback:
+                        on_exception_callback(error, attempt_number)
                 else:
                     try:
                         if validator:
@@ -36,6 +37,8 @@ def wrap(
                             error = ValueError('Validator function returned false.')
                         else:
                             error = e
+                        if on_validation_failure_callback:
+                            on_validation_failure_callback(error, attempt_number, result)
                     else:
                         return result
 
@@ -63,6 +66,16 @@ def context_wrap(
     errors_to_catch: tuple = (Exception, ),
     validator: callable = None,
     on_exception_callback: callable = None,
+    on_validation_failure_callback: callable = None,
     on_raise_callback: callable = None
     ):
-    yield wrap(func, number_of_attempts, time_to_sleep, errors_to_catch, validator, on_exception_callback, on_raise_callback)
+    yield wrap(
+        func,
+        number_of_attempts,
+        time_to_sleep,
+        errors_to_catch,
+        validator,
+        on_exception_callback,
+        on_validation_failure_callback,
+        on_raise_callback
+        )

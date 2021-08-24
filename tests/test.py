@@ -58,7 +58,7 @@ class testFunctionErrorHandling(unittest.TestCase):
         def raising_error(exception: Exception, message: str):
             raise exception(message)
 
-        def check_if_hello_world(e):
+        def check_if_hello_world(e, attempt_number):
             self.count += 1
             if str(e) == 'hello world':
                 pass

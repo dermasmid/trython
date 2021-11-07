@@ -1,5 +1,11 @@
+import re
+
 from setuptools import find_packages, setup
-from trython import __version__ as version
+
+
+with open("trython/__init__.py", encoding="utf-8") as f:
+    version = re.findall(r"__version__ = \"(.+)\"", f.read())[0]
+
 
 with open("README.md", encoding="utf-8") as f:
     readme = f.read()

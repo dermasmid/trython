@@ -1,25 +1,22 @@
-import time
 import functools
-from contextlib import contextmanager
 import importlib
-
+import time
+from contextlib import contextmanager
 
 
 def wrap(
     func: callable = None,
     number_of_attempts: int = 5,
     time_to_sleep: int = 30,
-    errors_to_catch: tuple = (Exception, ),
+    errors_to_catch: tuple = (Exception,),
     validator: callable = None,
     on_exception_callback: callable = None,
     on_validation_failure_callback: callable = None,
     on_raise_callback: callable = None,
     overwrite: bool = False,
-    overwrite_path: str = None
-    ):
-
+    overwrite_path: str = None,
+):
     def _decorate(func):
-
         @functools.wraps(func)
         def wrapped_function(*args, **kwargs):
             attempt_number = 1
@@ -37,11 +34,13 @@ def wrap(
                             assert validator(result)
                     except Exception as e:
                         if isinstance(e, AssertionError):
-                            error = ValueError('Validator function returned false.')
+                            error = ValueError("Validator function returned false.")
                         else:
                             error = e
                         if on_validation_failure_callback:
-                            on_validation_failure_callback(error, attempt_number, result)
+                            on_validation_failure_callback(
+                                error, attempt_number, result
+                            )
                     else:
                         return result
 
@@ -67,20 +66,19 @@ def wrap(
     return _decorate
 
 
-
 @contextmanager
 def context_wrap(
     func: callable = None,
     number_of_attempts: int = 5,
     time_to_sleep: int = 30,
-    errors_to_catch: tuple = (Exception, ),
+    errors_to_catch: tuple = (Exception,),
     validator: callable = None,
     on_exception_callback: callable = None,
     on_validation_failure_callback: callable = None,
     on_raise_callback: callable = None,
     overwrite: bool = False,
-    overwrite_path: str = None
-    ):
+    overwrite_path: str = None,
+):
 
     try:
         yield wrap(
@@ -93,8 +91,8 @@ def context_wrap(
             on_validation_failure_callback,
             on_raise_callback,
             overwrite,
-            overwrite_path
-            )
+            overwrite_path,
+        )
     finally:
         if overwrite:
             # Revert the overwrite.

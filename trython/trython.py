@@ -1,6 +1,7 @@
 import time
 import functools
 from contextlib import contextmanager
+import importlib
 
 
 
@@ -12,7 +13,9 @@ def wrap(
     validator: callable = None,
     on_exception_callback: callable = None,
     on_validation_failure_callback: callable = None,
-    on_raise_callback: callable = None
+    on_raise_callback: callable = None,
+    overwrite: bool = False,
+    overwrite_path: str = None
     ):
 
     def _decorate(func):
@@ -51,6 +54,13 @@ def wrap(
 
         return wrapped_function
 
+    if overwrite:
+        if not overwrite_path:
+            overwrite_path = func.__module__
+        module = importlib.import_module(overwrite_path)
+        module.__dict__[func.__name__] = _decorate(func)
+        return module.__dict__[func.__name__]
+
     if func:
         return _decorate(func)
 
@@ -67,15 +77,28 @@ def context_wrap(
     validator: callable = None,
     on_exception_callback: callable = None,
     on_validation_failure_callback: callable = None,
-    on_raise_callback: callable = None
+    on_raise_callback: callable = None,
+    overwrite: bool = False,
+    overwrite_path: str = None
     ):
-    yield wrap(
-        func,
-        number_of_attempts,
-        time_to_sleep,
-        errors_to_catch,
-        validator,
-        on_exception_callback,
-        on_validation_failure_callback,
-        on_raise_callback
-        )
+
+    try:
+        yield wrap(
+            func,
+            number_of_attempts,
+            time_to_sleep,
+            errors_to_catch,
+            validator,
+            on_exception_callback,
+            on_validation_failure_callback,
+            on_raise_callback,
+            overwrite,
+            overwrite_path
+            )
+    finally:
+        if overwrite:
+            # Revert the overwrite.
+            if not overwrite_path:
+                overwrite_path = func.__module__
+            module = importlib.import_module(overwrite_path)
+            module.__dict__[func.__name__] = func

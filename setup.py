@@ -11,10 +11,6 @@ with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
 
-with open("requirements.txt", encoding="utf-8") as f:
-    requirements = [r.strip() for r in f]
-
-
 setup(
     name="trython",
     version=version,
@@ -31,6 +27,5 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=requirements,
     python_requires=">=3.6",
 )

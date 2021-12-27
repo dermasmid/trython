@@ -1,8 +1,4 @@
-# Installation
-
-`pip3 install trython`
-
-# About
+# Trython
 The main use for this package is when making requests with the requests module.
 Sometimes the network might be unavailable, Or the server (the endpiont) might be temporarily down,
 We don't want our script to quit just because of that (although we can put everything in a loop and catch error's, We don't want to do that because that will still lose the progress of the previous loop, and is a bit messy).
@@ -10,6 +6,11 @@ We don't want our script to quit just because of that (although we can put every
 This is where *trython* comes in, it gives you two very approachable techniques to solve this.
 
 From here on I'll be using `requests.get` as the function we want to add error handling to.
+
+
+# Installation
+
+`pip3 install trython`
 
 
 ## Approach 1
@@ -38,10 +39,11 @@ Creating a temporary function with a context manager.
 ```python
 import requests
 import trython
-with trython.context_wrap(requests.get, validator=validators.requests_json_validator, time_to_sleep=1) as get:
+import trython_validators
+with trython.context_wrap(requests.get, validator=trython_validators.requests_json_validator, time_to_sleep=1) as get:
     response = get('https://jsonplaceholder.typicode.com/posts').json()
 
-with trython.context_wrap(requests.get, validator=validators.requests_xml_validator, time_to_sleep=1) as get:
+with trython.context_wrap(requests.get, validator=trython_validators.requests_xml_validator, time_to_sleep=1) as get:
     response = get('https://www.cs.utexas.edu/~mitra/csFall2015/cs329/lectures/xml/xslplanes.1.xml.txt').text
 
 ```
@@ -62,10 +64,17 @@ The wrap function takes in a couple of arguments:
 
 # More about validtators
 Let's take another look at validators, because without them this whole thing is useless.
+
+First you need to install it, to install run:
+
+```bash
+pip install trython-validators
+```
+
 A very common reason that a script will quit is when you are hitting a api endpiont, and you expect a certain data type, and you go ahead and call some function and that data that will give you an error when it doesn't understand that data it got, without validators there's no way for us to know that.
 
 That's when we create a validator - when we expect the result of a given function to be something, but might a times be something else entirely.
 We create a function that takes in the func's return value and we check if it satisfies us, And if the validator function returns false or throws an error, then we retry, otherwise - we know we got the right data.
 
-I have included some predefined validators which you can import like this: `from trython import validators`.
+I have included some predefined validators which you can import like this: `import trython_validators`.
 Feel free to make pr with some other helpful validators.

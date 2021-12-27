@@ -16,7 +16,7 @@ import unittest
 import requests
 import trython
 from requests.exceptions import MissingSchema
-from trython import validators
+import trython_validators
 
 VALID_JSON = "https://jsonplaceholder.typicode.com/posts"
 VALID_XML = (
@@ -30,7 +30,7 @@ class testFunctionErrorHandling(unittest.TestCase):
         @trython.wrap(
             time_to_sleep=1,
             number_of_attempts=2,
-            validator=validators.requests_json_validator,
+            validator=trython_validators.requests_json_validator,
         )
         def test(url):
             return requests.get(url)
@@ -41,7 +41,9 @@ class testFunctionErrorHandling(unittest.TestCase):
 
     def test_wrap(self):
         requests.get = trython.wrap(
-            requests.get, time_to_sleep=1, validator=validators.requests_xml_validator
+            requests.get,
+            time_to_sleep=1,
+            validator=trython_validators.requests_xml_validator,
         )
         try:
             requests.get(VALID_XML)
@@ -50,7 +52,9 @@ class testFunctionErrorHandling(unittest.TestCase):
 
     def test_context_manager(self):
         with trython.context_wrap(
-            requests.get, validator=validators.requests_json_validator, time_to_sleep=1
+            requests.get,
+            validator=trython_validators.requests_json_validator,
+            time_to_sleep=1,
         ) as get:
             self.assertRaises(MissingSchema, get, "f")
             self.assertRaises(json.decoder.JSONDecodeError, get, VALID_RSS)
@@ -96,7 +100,7 @@ class testFunctionErrorHandling(unittest.TestCase):
         with trython.context_wrap(
             requests.get,
             number_of_attempts=3,
-            validator=validators.requests_json_validator,
+            validator=trython_validators.requests_json_validator,
             time_to_sleep=2,
             on_validation_failure_callback=on_exception,
             overwrite=True,
